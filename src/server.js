@@ -25,15 +25,24 @@ const wss = new WebSocketServer({server}); // http 서버에 WebSocket 서버 �
 //     console.log(socket);
 // }
 
+const sockets = [];
+
 wss.on("connection", (socket)=>{
+    sockets.push(socket);
     console.log("Connected to Browser"); // 브라우저와 연결된 경우 출력
     socket.on("close", ()=>{ // 브라우저에서 창을 닫는 경우,
         console.log("Disconnected from Browser");
     })
     socket.on("message", (message)=>{ // 브라우저에서 메세지를 받는 경우,
-        console.log(`Got this: ${message} from Browser`);
+        // console.log(`Got this: ${message} from Browser`);
+        sockets.forEach((aSocket) => {
+            if(aSocket !== socket)// 본인 소켓을 제외한 모든 소켓에 전송.
+                aSocket.send(message.toString() );
+
+        });
+        // socket.send(message.toString()); // 브라우저에 받았던 메시지 전송.
     })
-    socket.send("hello"); // 브라우저에 메세지 전송
+    // socket.send("hello"); // 브라우저에 메세지 전송
 });
 
 server.listen(3000, handleListen); // http 서버에 access
