@@ -8,13 +8,6 @@ html(lang="en")
     body
         header
             h1 Noom
-        main 
-
-            form#nickname
-                input(type = "text", placeholder="choose a nickname", required)
-                button save
-            ul
-            form#message
-                input(type="text", placeholder="wirte a message", required)
-                button send
+        main
+        scirpt(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")

@@ -1,5 +1,8 @@
 // 프론트엔드에서 실행.
 
+const socket = io();
+
+/*
 const messageList = document.querySelector("ul");
 const nickForm = document.querySelector("#nickname");
 const messageForm = document.querySelector("#message");
@@ -7,14 +10,14 @@ const socket = new WebSocket(`ws://${window.location.host}`); // socket : 서버
 
 // let nickName= '';
 
-function makeMessage(type, payload, /*nickName*/){ // Object -> String
-    /**
-     * Object를 String으로 변환해야 하는 이유
-     다른 프로그래밍 언어로 작성된 서버와 통신하기 위해서.
-     - Object는 자바스크립트에서 사용되는 객체이다. 다른 프로그래밍 언어는 다른 객체 형태를 사용할 수 있다.
-     - webSocket은 브라우저의 api이므로, 어떤 언어에서 사용될지 판단하면 안됨.
+function makeMessage(type, payload){ // Object -> String
+    
+    
+    //  * Object를 String으로 변환해야 하는 이유
+    //  다른 프로그래밍 언어로 작성된 서버와 통신하기 위해서.
+    //  - Object는 자바스크립트에서 사용되는 객체이다. 다른 프로그래밍 언어는 다른 객체 형태를 사용할 수 있다.
+    //  - webSocket은 브라우저의 api이므로, 어떤 언어에서 사용될지 판단하면 안됨.
 
-     **/
 
     const msg = {
         type, payload, 
@@ -63,3 +66,4 @@ function handleNickSubmit(event){
 
 messageForm.addEventListener("submit", handleSubmit);
 nickForm. addEventListener("submit", handleNickSubmit);
+*/
