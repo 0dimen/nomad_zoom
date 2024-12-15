@@ -29,17 +29,25 @@ const sockets = [];
 
 wss.on("connection", (socket)=>{
     sockets.push(socket);
+    socket["nickname"] = "Anonymous";
     console.log("Connected to Browser"); // 브라우저와 연결된 경우 출력
     socket.on("close", ()=>{ // 브라우저에서 창을 닫는 경우,
         console.log("Disconnected from Browser");
     })
-    socket.on("message", (message)=>{ // 브라우저에서 메세지를 받는 경우,
+    socket.on("message", (msg)=>{ // 브라우저에서 메세지를 받는 경우,
         // console.log(`Got this: ${message} from Browser`);
-        sockets.forEach((aSocket) => {
-            if(aSocket !== socket)// 본인 소켓을 제외한 모든 소켓에 전송.
-                aSocket.send(message.toString() );
-
-        });
+        const message = JSON.parse(msg);
+        switch (message.type){
+            case "new_message":
+                sockets.forEach((aSocket) => {
+                    // if(aSocket !== socket) // 본인 소켓을 제외한 모든 소켓에 전송.
+                    aSocket.send(`${socket["nickname"]}: ${message.payload}`);
+                })
+                break;
+            case "nickname":
+                socket["nickname"] = message.payload;
+                break;
+        }
         // socket.send(message.toString()); // 브라우저에 받았던 메시지 전송.
     })
     // socket.send("hello"); // 브라우저에 메세지 전송
