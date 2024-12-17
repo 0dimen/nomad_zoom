@@ -5,23 +5,18 @@ const socket = io();
 const welcome = document.getElementById("welcome");
 const welcomeForm = welcome.querySelector("form");
 const room = document.getElementById("room");
-const roomForm = room.querySelector("form");
+// const roomForm = room.querySelector("form");
 room.hidden = true;
 
 let roomName = "";
 
-function showRoom(){
-    welcome.hidden = true;
-    room.hidden = false;
-    const roomTitle = room.querySelector("h3");
-    roomTitle.innerText = `Room ${roomName}`;
-}
 
 function handleWelcomeSubmit(event){
     event.preventDefault();
     const input = welcomeForm.querySelector("input");
-    socket.emit("enter_room", input.value, showRoom);
-    roomName = input.value;
+    const value = input.value;
+    socket.emit("enter_room", value, showRoom);
+    roomName = value;
     input.value = "";
 }
 
@@ -32,23 +27,47 @@ function addMessage(message){
     ul.appendChild(li);
 }
 
-function handleRoomSubmit(event){
+function handleNickNameSubmit(event){
     event.preventDefault();
-    const input = roomForm.querySelector("input");
-    socket.emit("new_message", roomName, input.value);
+    const input = room.querySelector("#name input");
+    const value = input.value;
+    socket.emit("nickname", value);
+    input.value = "";
+}
+
+function handleMessageSubmit(event){
+    event.preventDefault();
+    const input = room.querySelector("#msg input");
+    const value = input.value;
+    socket.emit("new_message", roomName, value, ()=>{
+        addMessage(`You: ${value}`);
+    });
     input.value= "";
 }
 
-socket.on("welcome", ()=>{
-    addMessage("Someone joined!");
+function showRoom(){
+    welcome.hidden = true;
+    room.hidden = false;
+    const roomTitle = room.querySelector("h3");
+    roomTitle.innerText = `Room ${roomName}`;
+    const msgForm = room.querySelector("#msg");
+    const nameForm = room.querySelector("#name");
+    msgForm.addEventListener("submit", handleMessageSubmit);
+    nameForm.addEventListener("submit", handleNickNameSubmit);
+}
+
+socket.on("welcome", (user)=>{
+    addMessage(`${user} arrived!`);
 });
 
-socket.on("new_message", (msg) =>{
-    addMessage(msg);
-});
+socket.on("new_message", addMessage);
+
+socket.on("bye", (left)=>{
+    addMessage(`${left} left`);
+})
 
 welcomeForm.addEventListener("submit", handleWelcomeSubmit);
-roomForm.addEventListener("submit", handleRoomSubmit);
+// roomForm.addEventListener("submit", handleRoomSubmit); // room의 socket id가 정해지기 전에 roomForm에 eventListener를 다는 것은 리소스 낭비다.
 
 
 /*

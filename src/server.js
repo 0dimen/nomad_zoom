@@ -22,16 +22,21 @@ const httpServer = http.createServer(app); // http 서버 생성.
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (socket)=>{
+    socket["nickname"] = "Anonymous";
+
     socket.on("enter_room", (roomName, done) => {
         socket.join(roomName);
         done();
-        socket.to(roomName).emit("welcome");
+        socket.to(roomName).emit("welcome", socket.nickname);
     });
-
-    socket.on("new_message", (roomName, msg)=>{
-        socket.to(roomName).emit("new_message", msg);
+    socket.on("disconnecting", () =>{
+        socket.rooms.forEach(room=> socket.to(room).emit("bye", socket.nickname));
+    })
+    socket.on("new_message", (roomName, msg, done)=>{
+        socket.to(roomName).emit("new_message", `${socket.nickname}: ${msg}`);
+        done();
     });
-
+    socket.on("nickname", nickname => socket["nickname"] = nickname);
 });
 
 
