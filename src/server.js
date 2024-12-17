@@ -22,8 +22,19 @@ const httpServer = http.createServer(app); // http 서버 생성.
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (socket)=>{
-    console.log(socket);
-})
+    socket.on("enter_room", (roomName, done) => {
+        socket.join(roomName);
+        done();
+        socket.to(roomName).emit("welcome");
+    });
+
+    socket.on("new_message", (roomName, msg)=>{
+        socket.to(roomName).emit("new_message", msg);
+    });
+
+});
+
+
 
 
 // function handleConnection(socket){
